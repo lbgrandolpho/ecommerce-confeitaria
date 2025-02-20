@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_02_19_181340) do
+ActiveRecord::Schema[7.2].define(version: 2025_02_20_185350) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -46,7 +46,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_19_181340) do
     t.bigint "user_id", null: false
     t.bigint "flavor_id", null: false
     t.text "content"
-    t.string "image"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["flavor_id"], name: "index_comments_on_flavor_id"
@@ -75,15 +74,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_19_181340) do
     t.decimal "total_weight"
     t.decimal "total_price"
     t.text "address"
-    t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "name"
     t.string "email"
-    t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "encrypted_password", default: "", null: false
