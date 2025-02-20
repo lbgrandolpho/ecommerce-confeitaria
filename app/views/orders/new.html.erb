@@ -1,0 +1,97 @@
+<h2 class="text-2xl font-bold mb-4">Novo Pedido</h2>
+
+<%= form_with model: @order, class: "bg-white p-6 shadow rounded-lg" do |f| %>
+  <div class="mb-4">
+    <%= f.label :address, "Endereço de Entrega", class: "block text-gray-700 font-bold mb-2" %>
+    <%= f.text_area :address, class: "w-full border border-gray-300 rounded p-2" %>
+  </div>
+
+  <h3 class="text-xl font-bold mt-4">Itens do Pedido</h3>
+  <ul id="order-items-list">
+    <% @order.order_items.each do |item| %>
+      <li class="order-item mb-4 mt-4 flex items-center gap-4">
+        <span class="text-gray-900 font-semibold w-24"><%= item.flavor.name %></span>
+
+        <%= f.fields_for :order_items, item do |item_form| %>
+          <%= item_form.hidden_field :flavor_id %>
+
+          <div class="flex items-center gap-2">
+            <%= item_form.label :weight, "Peso (kg)", class: "mr-4 text-gray-700" %>
+            <%= item_form.number_field :weight, step: 0.1, class: "mr-4 w-24 border border-gray-300 rounded p-2" %>
+          </div>
+        <% end %>
+
+        <button type="button" class="remove-item bg-red-500 text-white px-2 py-1 rounded ml-2">Remover</button>
+      </li>
+    <% end %>
+  </ul>
+
+  <select id="flavor-selector" class="mt-4 border border-gray-300 rounded p-2 bg-green-500 text-white">
+    <option value="">Adicionar Sabor</option>
+    <% Flavor.all.each do |flavor| %>
+      <option value="<%= flavor.id %>"><%= flavor.name %></option>
+    <% end %>
+  </select>
+
+  <%= f.submit "Finalizar Pedido", class: "bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600 mt-4" %>
+<% end %>
+
+
+<% if @order.errors.any? %>
+  <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+    <p><strong>Erro(s) ao salvar o pedido:</strong></p>
+    <ul class="list-disc pl-5">
+      <% @order.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const flavorSelector = document.getElementById("flavor-selector");
+    const orderItemsList = document.getElementById("order-items-list");
+
+    if (!flavorSelector || !orderItemsList) {
+      console.error("Erro: Elementos necessários não encontrados!");
+      return;
+    }
+
+    let itemIndex = <%= @order.order_items.size %>;
+
+    flavorSelector.addEventListener("change", function () {
+      const selectedFlavorId = flavorSelector.value;
+      if (!selectedFlavorId) return;
+
+      const selectedFlavorName = flavorSelector.options[flavorSelector.selectedIndex].text;
+
+      const newItem = document.createElement("li");
+      newItem.classList.add("order-item", "mb-4", "mt-4", "flex", "items-center", "gap-4");
+
+      newItem.innerHTML = `
+        <span class="text-gray-900 font-semibold w-24">${selectedFlavorName}</span>
+        <input type="hidden" name="order[order_items_attributes][${itemIndex}][flavor_id]" value="${selectedFlavorId}">
+
+        <div class="flex items-center gap-2">
+          <label class="mr-4 text-gray-700">Peso (kg)</label>
+          <input type="number" step="0.1" name="order[order_items_attributes][${itemIndex}][weight]" class="mr-4 w-24 border border-gray-300 rounded p-2">
+        </div>
+
+        <button type="button" class="remove-item bg-red-500 text-white px-2 py-1 rounded ml-2">Remover</button>
+      `;
+
+      orderItemsList.appendChild(newItem);
+      itemIndex++;
+      flavorSelector.selectedIndex = 0;
+    });
+
+    orderItemsList.addEventListener("click", function (event) {
+      if (event.target.classList.contains("remove-item")) {
+        event.target.parentElement.remove();
+      }
+    });
+  });
+</script>
+
+

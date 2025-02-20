@@ -1,0 +1,14 @@
+<h2 class="text-2xl font-bold mb-4">Detalhes do Pedido</h2>
+
+<p><strong>Preço total (R$):</strong> <%= @order.total_price %></p>
+<p><strong>Peso total (Kg):</strong> <%= @order.total_weight %></p>
+<p><strong>Endereço de Entrega:</strong> <%= @order.address %></p>
+
+<h3 class="text-xl font-bold mt-4">Itens do Pedido</h3>
+<ul>
+  <% @order.order_items.each do |item| %>
+    <li>
+      <%= item.flavor.name %> - <%= item.weight %> kg
+    </li>
+  <% end %>
+</ul>
